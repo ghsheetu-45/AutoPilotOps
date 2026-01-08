@@ -25,6 +25,3 @@ complain. AutoPilotOps proactively detects issues and applies recovery actions.
 ## Architecture
 Microservice-based design separating monitoring, analysis, healing,
 and visualization responsibilities.
-
-## Project Status
-Active development (Day 1 completed)
