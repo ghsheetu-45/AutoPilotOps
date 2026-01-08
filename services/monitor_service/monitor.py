@@ -1,44 +1,35 @@
-import requests
 import time
-from backend.storage.db import SessionLocal, engine
-from backend.storage.models import ApiHealth
-from backend.storage.db import Base
+import requests
+from services.analyzer_service.analyzer import analyze
 
-Base.metadata.create_all(bind=engine)
 
-def check_api_health(url: str):
-    start = time.time()
-    db = SessionLocal()
-
+def check_api(url: str):
+    start_time = time.time()
     try:
-        r = requests.get(url, timeout=5)
-        response_time = (time.time() - start) * 1000
+        response = requests.get(url, timeout=5)
+        response_time_ms = round((time.time() - start_time) * 1000, 2)
 
-        status = "HEALTHY" if response_time < 2000 else "SLOW"
+        monitor_result = {
+            "url": url,
+            "http_status": response.status_code,
+            "response_time_ms": response_time_ms
+        }
 
-        db.add(ApiHealth(
-            url=url,
-            status=status,
-            response_time=response_time
-        ))
-        db.commit()
+        analysis = analyze(monitor_result)
 
         return {
-            "url": url,
-            "status": status,
-            "response_time_ms": round(response_time, 2),
-            "http_status": r.status_code
+            **monitor_result,
+            "analysis": analysis
         }
 
     except Exception as e:
-        db.add(ApiHealth(
-            url=url,
-            status="DOWN",
-            response_time=0
-        ))
-        db.commit()
-
-        return {"url": url, "status": "DOWN", "error": str(e)}
-
-    finally:
-        db.close()
+        return {
+            "url": url,
+            "http_status": 0,
+            "response_time_ms": None,
+            "analysis": {
+                "status": "DOWN",
+                "severity": "CRITICAL",
+                "reason": str(e)
+            }
+        }
