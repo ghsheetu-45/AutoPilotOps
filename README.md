@@ -33,7 +33,56 @@ AutoPilotOps addresses this problem by continuously monitoring APIs, analyzing t
 ---
 
 ## Tech Stack
+- Python 3  
+- FastAPI  
+- Requests  
+- Modular Service Architecture  
+- Git & GitHub  
 
+(Designed to be extensible for Docker, alerting, and dashboards)
+
+---
+
+## Architecture Overview
+
+AutoPilotOps follows a modular, service-oriented design:
+
+- *Monitor Service*  
+  - Measures API availability and latency  
+
+- *Analyzer Service*  
+  - Applies rule-based logic to determine system health  
+
+- *API Layer*  
+  - Exposes unified endpoints for end users  
+
+This separation mirrors real-world backend and SRE system design.
+
+---
+
+## Project Structure
+AutoPilotOps/ ├── services/ │   ├── monitor_service/ │   └── analyzer_service/ ├── backend/ ├── README.md
+Copy code
+
+---
+
+## Sample API Usage
+GET /check?url=https://api.github.com
+Copy code
+
+### Sample Response
+
+```json
+{
+  "url": "https://api.github.com",
+  "http_status": 200,
+  "response_time_ms": 245,
+  "analysis": {
+    "status": "HEALTHY",
+    "severity": "LOW",
+    "reason": "API is healthy"
+  }
+}
 
 
 
