@@ -1,12 +1,8 @@
-from fastapi import FastAPI
-from services.monitor_service.monitor import check_api
+from fastapi import FastAPI, Query
+from services.monitor_service.health import check_api_health
 
-app = FastAPI()
+app = FastAPI(title="Monitor Service")
 
-@app.get("/")
-def root():
-    return {"message": "Monitor service running"}
-
-@app.get("/check")
-def check(url: str):
-    return check_api(url)
+@app.get("/health-check")
+def health_check(url:str=Query(..., description="API URL to monitor")):
+    return check_api_health(url)
